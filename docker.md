@@ -7,7 +7,7 @@
 - `--format` : ps내용을 원하는 형태로 포맷팅할 수 있음
 
 	```
-CONTAINER ID / IMAGE / COMMAND / CREATED / STATUS / PORTS / NAMES
+	CONTAINER ID / IMAGE / COMMAND / CREATED / STATUS / PORTS / NAMES
 	```
 
 ## docker logs
