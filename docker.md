@@ -32,3 +32,9 @@
 - usage : `$ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]`
 - Options
 	- `-d` : containers started in detached mode
+
+## docker rmi
+- 도커 이미지 삭제
+- usage : `$ docker rmi [OPTIONS] IMAGE [IMAGE...]`
+- Options
+	- `-f` : 실행중 혹은 종료된 container도 함께 삭제
