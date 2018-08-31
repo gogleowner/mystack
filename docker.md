@@ -32,6 +32,9 @@
 - usage : `$ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]`
 - Options
 	- `-d` : containers started in detached mode
+	- `-p` : 포트포워딩
+		- ex) `$ docker run -d -p 5000:5000 {image}`
+		- `{image}` image를 detached모드로 실행하고 포트를 5000으로 포트포워딩 하라.
 
 ## docker rmi
 - 도커 이미지 삭제
