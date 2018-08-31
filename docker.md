@@ -18,6 +18,7 @@
 
 ## docker kill
 - 구동중인 컨테이너를 shutdown
+- usage : `docker kill {container id}`
 
 ## docker images
 - 서버에 존재하는 도커 이미지 리스트
