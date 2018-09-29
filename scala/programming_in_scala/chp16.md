@@ -199,3 +199,163 @@ res33: String = [ 1,2,3,4,5,6,7,8,9,10 ]
 - `iterator`
 - `toArray`
 - `copyToArray`
+
+## high-order operator
+
+### 매핑
+- `map` : 리스트의 모든 원소에 함수를 적용해서 나온 결과값으로 이뤄진 리스트를 반환
+- `flatMap` : 리스트의 모든 원소에 함수를 적용해서 나온 모든 리스트를 연결한 단일 리스트를 반환
+- `foreach` : 리스트의 모든 원소에 반환타입이 `Unit`인 함수를 적용한다.
+
+```
+scala> val words = List("the", "quick", "brown", "fox")
+words: List[String] = List(the, quick, brown, fox)
+
+scala> words map(_.toList)
+res4: List[List[Char]] = List(List(t, h, e), List(q, u, i, c, k), List(b, r, o, w, n), List(f, o, x))
+
+scala> words flatMap(_.toList)
+res5: List[Char] = List(t, h, e, q, u, i, c, k, b, r, o, w, n, f, o, x)
+
+scala> var sum = 0
+sum: Int = 0
+
+scala> List.range(1, 5).foreach(sum += _)
+
+scala> sum
+res9: Int = 10
+```
+
+### 리스트 걸러내기
+- 조건에 맞는 원소들을 걸러냄
+    - `filter` : 리스트의 모든 원소에 반환타입이 `Boolean`인 함수를 적용하여 반환값이 `true`인 원소의 리스트를 만든다.
+    - `partition` : `filter`의 인자와 같지만 `true`인 원소 리스트, `false`인 원소 리스트의 순서쌍을 만든다.
+    - `find` : 조건에 만족하는 첫번째 원소만 반환한다.
+- 조건에 맞는 긴 접두사를 반환
+- `takeWhile` : 함수를 만족하는 가장 긴 접두사를 반환
+- `dropWhile` : 함수를 만족하는 가장 긴 접두사를 제거
+- `span` : `takeWhile`, `dropWhile`을 합쳐놓은 것과 같음. 두 리스트의 순서쌍을 반환
+
+```
+scala> List.range(1, 5).filter(_ % 2 == 0)
+res10: List[Int] = List(2, 4)
+
+scala> List("the", "quick", "brown", "fox").filter(_.length == 3)
+res13: List[String] = List(the, fox)
+
+scala> List.range(1, 5).partition(_ % 2 == 0)
+res14: (List[Int], List[Int]) = (List(2, 4),List(1, 3))
+
+scala> List.range(1, 5).find(_ % 2 == 0)
+res15: Option[Int] = Some(2)
+
+scala> List(1, 2, 3, -4, 5).takeWhile(_ > 0)
+res32: List[Int] = List(1, 2, 3)
+
+scala> List(1, -1, 2, 3, -4, 5).takeWhile(_ > 0)
+res33: List[Int] = List(1)
+
+scala> List(1, 2, 3, 2, 3, -4, 5).dropWhile(_ > 0)
+res37: List[Int] = List(-4, 5)
+
+scala> List(1, 2, 3, 2, 3, -4, 5).span(_ > 0)
+res38: (List[Int], List[Int]) = (List(1, 2, 3, 2, 3),List(-4, 5))
+```
+
+### 리스트 전체에 대한 술어
+- `forall` : 리스트의 모든 원소가 함수를 만족할때 결과가 true
+- `exists` : 리스트의 원소중의 하나라도 결과를 만족하는 원소가 존재하면 true
+
+```
+scala> List.range(1, 5).exists(_ == 0)
+res39: Boolean = false
+
+scala> List.range(1, 5).forall(_ > 0)
+res41: Boolean = true
+```
+
+### fold
+- `/:`, `foldLeft` : 리스트의 모든 원소를 왼쪽에서 오른쪽으로 이진연산자를 적용. 첫번째 인자는 초기값, 두번째 인자는 연산
+
+```
+scala> List.range(1, 5).foldLeft(0)(_ + _)
+res42: Int = 10
+
+scala> (0 /: List.range(1, 5)) (_ + _)
+res44: Int = 10
+
+scala> ("" /: words) (_ + " " + _)
+res45: String = " the quick brown fox"
+
+scala> (words.head /: words.tail) (_ + " " + _)
+res46: String = the quick brown fox
+
+(z /: List(a, b, c))(op) => op(op(op(z, a), b), c)
+```
+
+- `:\`, `foldRight` : 리스트의 모든 원소를 오른쪽에서 왼쪽으로 이진연산자를 적용. 첫번째 인자는 연산, 두번째 인자는 초기값
+
+```
+(List(a, b, c) :\ z)(op) => op(a, op(b, op(c, z)))
+```
+
+### 리스트 정렬
+- `sortWith` : 두 원소를 비교할 수 있는 함수를 이용하여 정렬. `x before y` 에서 `x`가 `y`보다 앞에 있어야한다면, `true`를 반환해야함.
+
+```
+scala> List(1, -3, 4, 2, 6).sortWith(_ < _)
+res50: List[Int] = List(-3, 1, 2, 4, 6)
+```
+
+## List 객체의 메소드
+
+### 원소로부터 리스트 만들기
+- `List.apply` : `List(1, 2, 3) == List.apply(1, 2, 3)`
+
+### 수의 범위를 리스트로 만들기
+- `List.range(from, until)`
+- `List.range(from, until, incremental)`
+
+```
+scala> List.range(1, 5)
+res51: List[Int] = List(1, 2, 3, 4)
+
+scala> List.range(1, 5, 2)
+res52: List[Int] = List(1, 3)
+```
+
+### 균일한 리스트 만들기
+- `List.fill` : 같은 원소를 0번 이상 반복한 리스트를 만든다.
+
+```
+scala> List.fill(5)('a')
+res53: List[Char] = List(a, a, a, a, a)
+```
+
+### 함수 도표화
+- `List.tabulate` : 제공된 함수로 계산한 원소의 리스트를 생성한다.
+    - 첫번째 인자 : 생성할 리스트의 차원
+    - 두번째 인자 : 리스트의 원소를 묘사
+
+```
+scala> List.tabulate(5)(n => n * n)
+res54: List[Int] = List(0, 1, 4, 9, 16)
+```
+
+### 여러 리스트 연결하기
+- `concat`
+
+```
+scala> List.concat( List('a', 'b'), List('c', 'd', 'e') )
+res56: List[Char] = List(a, b, c, d, e)
+```
+
+## 여러 리스트 함께 처리하기
+
+- `zipped` : 가장 짧은 리스트의 원소개수 만큼 순서쌍을 만들어낸다. 
+
+```
+scala> ( List(10, 20), List(3, 4, 5) ).zipped.map(_ * _)
+res59: List[Int] = List(30, 80)
+```
+
