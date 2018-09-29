@@ -16,3 +16,8 @@
         // push upstream
         $ git push upstream 
         ```
+## git config
+- `$ git config --list` : print global, local repository settings
+- `$ git config --edit` : open editor to edit local repository config
+- `$ git config --unset {some config}` : unset config in local repository config
+- `$ git config --global --unset {some config}` : unset config in global repository config
