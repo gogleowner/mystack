@@ -44,3 +44,9 @@ Optimistic Locking은 상호 베타적인 lock을 사용하지 않는다. 대신
     유저2 : 레코드를 다시 읽어서 유저1이 변경한 내용에 유저2의 변경 내용을 덮고 갱신한다.
 
 더 많은 의미와 고려사항이 있지만 이정도 연구로 충분하다.
+
+## 추가적으로 읽어봐야할 문서
+- [wikipedia-optimistic_concurrency_control](https://en.wikipedia.org/wiki/Optimistic_concurrency_control)
+- [wikipedia-record-locking](https://en.wikipedia.org/wiki/Record_locking)
+- [stackoverflow-optimistic-vs-pessimistic-locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking)
+
