@@ -7,3 +7,7 @@
 3. `Shift + i` 후 수정하고자 하는 텍스트 입력
 4. `ESC` 버튼을 누르면 수정하고자 하는 라인까지 수정이 모두 됨
 
+## 스크롤
+
+- `Ctrl + D` : Scroll window Downwards in the buffer.
+- `Ctrl + U` : Scroll window Upwards in the buffer.
