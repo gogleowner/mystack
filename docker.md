@@ -42,3 +42,9 @@
 - usage : `$ docker rmi [OPTIONS] IMAGE [IMAGE...]`
 - Options
 	- `-f` : 실행중 혹은 종료된 container도 함께 삭제
+
+## docker stats
+- 도커 컨테이너들의 리소스 사용률 보기
+- usage : `$ docker stats [OPTIONS] [CONTAINER...]`
+- Options
+	- `-a` : 모드 컨테이너
