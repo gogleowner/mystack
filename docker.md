@@ -53,3 +53,11 @@
 - 도커 컨테이너에서 실행중인 프로세스 목록
 - usage : `docker top CONTAINER [ps OPTIONS]`
 
+## docker rm
+- 도커 컨테이너 삭제
+- usage : `$ docker rm [OPTIONS] CONTAINER [CONTAINER...]`
+- Options
+  - `-f, --force` : 컨테이너가 실행중이어도 강제 삭제
+  - `-v, --volumes` : 컨테이너에 할당된 볼륨 영역 삭제
+  - `-l, --link` : 특정 링크 삭제
+
