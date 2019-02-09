@@ -1,6 +1,17 @@
 # 도커
 도커를 접하면서 처음 겪는 일들을 기록하는 일종의 cheat sheet.
 
+## docker 설치후 실행시 이슈
+
+```
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
+```
+- docker가 root 계정으로 설치되었을 때 root가 아닌 계정으로 실행하고자 하면 발생하는 오류이다.
+- docker의 실행 계정 속성을 변경후 유저 로그아웃후 재 로그인한다.
+- `$ sudo usermod -a -G docker ${USER_NAME}`
+- `$ sudo service docker restart`
+
+
 ## docker ps
 - 구동중인 컨테이너 목록
 - `-a` : 구동중, 멈춘 컨테이너 목록 보기
