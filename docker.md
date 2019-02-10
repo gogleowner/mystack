@@ -42,6 +42,12 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 ### docker shell에 root로 접속
 - `$ docker exec -u 0 -it {MY_CONTAINER} /bin/bash`
+- 참고 : https://docs.docker.com/engine/reference/run/
+
+```
+root (id = 0) is the default user within a container. The image developer can create additional users. Those users are accessible by name. When passing a numeric ID, the user does not have to exist in the container.
+```
+
 
 ## docker run
 - usage : `$ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]`
