@@ -40,6 +40,9 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 - 예 : `$ docker exec -it 컨테이너ID /bin/bash`
 	- 해당 컨테이너로 `/bin/bash` 를 실행한다.
 
+### docker shell에 root로 접속
+- `$ docker exec -u 0 -it {MY_CONTAINER} /bin/bash`
+
 ## docker run
 - usage : `$ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]`
 - Options
