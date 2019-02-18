@@ -30,6 +30,7 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 ## docker kill
 - 구동중인 컨테이너를 shutdown
 - usage : `docker kill {container id}`
+- `$ docker ps -a` 명령어 실행시에 컨테이너가 남아있음
 
 ## docker images
 - 서버에 존재하는 도커 이미지 리스트
@@ -81,3 +82,13 @@ root (id = 0) is the default user within a container. The image developer can cr
   - `-v, --volumes` : 컨테이너에 할당된 볼륨 영역 삭제
   - `-l, --link` : 특정 링크 삭제
 
+## docker cp
+- 도커 컨테이너 - 로컬 파일시스템 간의 파일/디렉토리 복사
+- usage : `$ docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-  /  $ docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH`
+- Options
+  - `--archive , -a` : Archive mode (copy all uid/gid information)
+  - `--follow-link , -L` : Always follow symbol link in SRC\_PATH
+
+## docker resource constraints
+- docker 컨테이너에 리소스 사용량을 조절할 수 있다.
+- [https://docs.docker.com/config/containers/resource_constraints/](https://docs.docker.com/config/containers/resource_constraints/)
