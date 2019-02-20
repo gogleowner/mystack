@@ -29,7 +29,7 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 ## docker kill
 - 구동중인 컨테이너를 shutdown
-- usage : `docker kill {container id}`
+- usage : `$ docker kill {container id}`
 - `$ docker ps -a` 명령어 실행시에 컨테이너가 남아있음
 
 ## docker images
@@ -72,7 +72,7 @@ root (id = 0) is the default user within a container. The image developer can cr
 
 ## docker top
 - 도커 컨테이너에서 실행중인 프로세스 목록
-- usage : `docker top CONTAINER [ps OPTIONS]`
+- usage : `$ docker top CONTAINER [ps OPTIONS]`
 
 ## docker rm
 - 도커 컨테이너 삭제
@@ -92,3 +92,8 @@ root (id = 0) is the default user within a container. The image developer can cr
 ## docker resource constraints
 - docker 컨테이너에 리소스 사용량을 조절할 수 있다.
 - [https://docs.docker.com/config/containers/resource_constraints/](https://docs.docker.com/config/containers/resource_constraints/)
+
+## 모든 docker 컨테이너 stop or remove
+- `$ docker stop $(docker ps -a -q)`
+- `$ docker rm $(docker ps -a -q)`
+
