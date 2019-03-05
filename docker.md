@@ -97,3 +97,18 @@ root (id = 0) is the default user within a container. The image developer can cr
 - `$ docker stop $(docker ps -a -q)`
 - `$ docker rm $(docker ps -a -q)`
 
+## docker volume ls
+- Volume의 목록을 보여준다.
+- Usage `$ docker volume ls [OPTIONS]`
+- Options
+  - `--filter, -f` : Provide filter values (e.g. ‘dangling=true’)
+  - `--format` : Pretty-print volumes using a Go template
+  - `--quiet, -q` : Only display volume names
+- Volume : 도커 컨테이너에 의해 생성 및 사용되는 데이터를 유지하는 메커니즘
+  ![types-of-mounts-volume](https://docs.docker.com/storage/images/types-of-mounts-volume.png)
+  - https://docs.docker.com/storage/volumes/
+
+## References
+- [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
+- [Top 10 Docker CLI commands you can’t live without](https://medium.com/the-code-review/top-10-docker-commands-you-cant-live-without-54fb6377f481)
+
