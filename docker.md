@@ -34,6 +34,12 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 ## docker images
 - 서버에 존재하는 도커 이미지 리스트
+- Usage : docker images [OPTIONS] [REPOSITORY[:TAG]]
+- Options
+	- `--all -a` : Show all images (default hides intermediate images)
+	- `--quiet , -q` : Only show numeric IDs
+	- ...
+
 
 ## docker exec
 - Run a command in a running container
@@ -93,9 +99,11 @@ root (id = 0) is the default user within a container. The image developer can cr
 - docker 컨테이너에 리소스 사용량을 조절할 수 있다.
 - [https://docs.docker.com/config/containers/resource_constraints/](https://docs.docker.com/config/containers/resource_constraints/)
 
-## 모든 docker 컨테이너 stop or remove
+## 모든 docker 컨테이너나 이미지 stop or remove
 - `$ docker stop $(docker ps -a -q)`
 - `$ docker rm $(docker ps -a -q)`
+- `$ docker rmi $(docker images -a -q)`
+
 
 ## docker volume ls
 - Volume의 목록을 보여준다.
