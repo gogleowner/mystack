@@ -13,4 +13,8 @@ TBD ...
 - 디폴트 워커 개수는 `코어수 * 2` 이다.
   - https://github.com/netty/netty/blob/00afb19d7a37de21b35ce4f6cb3fa7f74809f2ab/transport/src/main/java/io/netty/channel/MultithreadEventLoopGroup.java#L41
 
+# References
+- https://sungjk.github.io/2016/11/08/NettyThread.html
+- https://gompangs.tistory.com/105
+- https://okky.kr/article/228975
 
