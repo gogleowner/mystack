@@ -63,13 +63,17 @@ root (id = 0) is the default user within a container. The image developer can cr
 	- `-p` : 포트포워딩
 		- ex) `$ docker run -d -p 5000:5000 {image}`
 		- `{image}` image를 detached모드로 실행하고 포트를 5000으로 포트포워딩 하라.
+  - `--name` : 컨테이너에 이름 지정
+  - `--hostname , -h` : 컨테이너에 호스트이름 설정
+  - `--link` : 컨테이너 끼리 연결
+    - ex) `--link="container_name:alias"`
 
 ## docker rmi
 - 도커 이미지 삭제
 - usage : `$ docker rmi [OPTIONS] IMAGE [IMAGE...]`
 - Options
 	- `-f` : 실행중 혹은 종료된 container도 함께 삭제
-
+ 
 ## docker stats
 - 도커 컨테이너들의 리소스 사용률 보기
 - usage : `$ docker stats [OPTIONS] [CONTAINER...]`
