@@ -67,6 +67,8 @@ root (id = 0) is the default user within a container. The image developer can cr
   - `--hostname , -h` : 컨테이너에 호스트이름 설정
   - `--link` : 컨테이너 끼리 연결
     - ex) `--link="container_name:alias"`
+  - `--rm` : Automatically remove the container when it exits
+    - 컨테이너가 종료될때 자동으로 데이터를 지움
 
 ## docker rmi
 - 도커 이미지 삭제
@@ -119,6 +121,14 @@ root (id = 0) is the default user within a container. The image developer can cr
 - Volume : 도커 컨테이너에 의해 생성 및 사용되는 데이터를 유지하는 메커니즘
   ![types-of-mounts-volume](https://docs.docker.com/storage/images/types-of-mounts-volume.png)
   - https://docs.docker.com/storage/volumes/
+
+## docker build
+- Dockerfile로부터 도커 이미지를 빌드한다.
+- Usage : `$ docker build [OPTIONS] PATH | URL | -`
+- Options
+  - `--rm true` : 이미지 빌드가 성공한 후 임시 컨테이너를 삭제한다.
+  - `-t --tag=""` : 이미지의 이름과 태그를 명시한다. ex) `abc-project:0.0.1`
+  - `--build-arg` : 빌드 시점에 Dockerfile 에 `ENV` 값을 세팅한다.
 
 ## References
 - [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
