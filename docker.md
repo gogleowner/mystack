@@ -129,6 +129,7 @@ root (id = 0) is the default user within a container. The image developer can cr
   - `--rm true` : 이미지 빌드가 성공한 후 임시 컨테이너를 삭제한다.
   - `-t --tag=""` : 이미지의 이름과 태그를 명시한다. ex) `abc-project:0.0.1`
   - `--build-arg` : 빌드 시점에 Dockerfile 에 `ENV` 값을 세팅한다.
+  - `--file , -f` : 빌드할 Dockerfile 파일이름 지정 (Default is ‘PATH/Dockerfile’)
 
 ## References
 - [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
