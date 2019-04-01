@@ -8,7 +8,11 @@
 - -Xloggc:{fileName}
   - GC로그를 파일에 남김
 - -XX:+PrintGCTimeStamps
-  - GC로그에 TimeStamp를 남김
+  - GC로그에 java 앱의 구동시간 기준의 time stamp값을 남김
+- -XX:+PrintGCDateStamps
+  - GC로그에 날짜에 대한 date stamp를 남김
+- -XX:+PrintGCDetails
+  - GC로그에 GC 전후에 대한 각 영역별 용량 변화를 남김
 
 ## Heap Dump
 - -XX:+HeapDumpBeforeFullGC
