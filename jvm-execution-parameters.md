@@ -13,6 +13,8 @@
   - GC로그에 날짜에 대한 date stamp를 남김
 - -XX:+PrintGCDetails
   - GC로그에 GC 전후에 대한 각 영역별 용량 변화를 남김
+- -XX:+PrintHeapAtGC
+  - GC 발생 전후의 Heap에 대한 정보를 상세하게 기록
 
 ## Heap Dump
 - -XX:+HeapDumpBeforeFullGC
