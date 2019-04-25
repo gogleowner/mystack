@@ -69,6 +69,8 @@ root (id = 0) is the default user within a container. The image developer can cr
     - ex) `--link="container_name:alias"`
   - `--rm` : Automatically remove the container when it exits
     - 컨테이너가 종료될때 자동으로 데이터를 지움
+  - `--env , -e` : 환경변수 세팅
+    - ex) `-e "SPRING_PROFILES_ACTIVE=blabla"`
 
 ## docker rmi
 - 도커 이미지 삭제
