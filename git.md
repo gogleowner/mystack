@@ -32,4 +32,5 @@
         - `$ git commit --amend --author="gogleowner <gogleowner@gmail.com>" --no-edit`
         - `$ git rebase --continue`
 
-
+## git log
+- `git log --stat` : 커밋 이력에 변경된 파일 목록 확인
