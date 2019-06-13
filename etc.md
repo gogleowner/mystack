@@ -9,7 +9,7 @@
   - Thread 생성시에  여러 설정 값 세팅에 도움을 줄 수 있는 클래스이다.
   - Usage
 
-    ```
+```
 class MyTest {
     @Test
     internal fun `CustomizableThreadFactory practice`() {
@@ -17,7 +17,6 @@ class MyTest {
             override fun getThreadNamePrefix(): String {
                 return "gogleowner-"
             }
-
             override fun getThreadPriority(): Int {
                 return Thread.MIN_PRIORITY
             }
@@ -28,7 +27,7 @@ class MyTest {
         }
     }
 }
-    ```
+```
 
   - Reference : https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/concurrent/CustomizableThreadFactory.html
 
