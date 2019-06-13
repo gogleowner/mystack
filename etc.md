@@ -22,9 +22,7 @@ class MyTest {
                 return Thread.MIN_PRIORITY
             }
         })
-
         executorService.submit { logger.info { "this is gogleowner thread!" } }
-
         if (executorService.awaitTermination(5, TimeUnit.SECONDS)) {
             executorService.shutdown()
         }
