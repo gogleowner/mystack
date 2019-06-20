@@ -33,4 +33,8 @@
         - `$ git rebase --continue`
 
 ## git log
-- `git log --stat` : 커밋 이력에 변경된 파일 목록 확인
+- `$ git log --stat` : 커밋 이력에 변경된 파일 목록 확인
+
+## git stash
+- `$ git stash clear` : 모든 stash 상태 제거
+  - https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-stash.html
