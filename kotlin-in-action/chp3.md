@@ -93,3 +93,147 @@
 
         const val UNIX_LINE_SEPERATOR = "\n" // const는 primitive, String타입만 지정할 수 있다.
         ==> public static final String UNIX_LINE_SEPERATOR = "\n";
+
+# 3.3. 메소드를 다른 클래스에 추가 : 확장 함수와 확장 프로퍼티
+
+코틀린의 핵심 목표 중 하나는, 기존 자바 코드 & 코틀린 코드를 자연스럽게 통합하는 것이다. 코틀린을 기존 자바 프로젝트에 통합하는 경우에는 코틀린으로 직접 변환할 수 없거나 미처 변환하지 않은 기존 자바 코드를 처리할 수 있어야 한다. 확장 함수가 이런 역할을 해줄 수 있다.
+
+확장함수는 어떤 클래스의 멤버 메소드인 것처럼 호출할 수 있지만 그 클래스 밖에 선언되어있다.
+
+    package strings
+    fun String.lastChar(): Char = this.get(this.length - 1)
+       수신객체타입                 수신객체
+    
+    // this는 생략 가능하다.
+    
+    println("kotlin".lastChar()) ==> n
+
+확장 함수 내부에서는 수신 객체의 메소드, 프로퍼티를 바로 사용할 수 있다. 다만 클래스 내부에서만 사용할 수 있는 private, protected 멤버 변수는 사용할 수 없다.
+
+## 3.3.1. 임포트와 확장 함수
+
+- 확장함수를 사용하기 위해서는 그 함수를 다른 클래스나 함수와 마찬가지로 임포트해야만 한다.
+
+    import strings.lastChar
+    
+    val c = "kotlin".lastChar()
+
+## 3.3.2. 자바에서 확장 함수 호출
+
+- 내부적으로 확장 함수는 수신 객체를 첫번째 인자로 받는 static 메소드이다. 그래서 확장 함수를 호출해도 다른 adapter 객체나 실행시점 부가 비용이 들지 않는다.
+- 위 확장 함수를 `StringUtil.kt` 파일에 정의했다면 자바에서는 `StringUtilKt.lastChar("java");` 로 호출하면 된다.
+
+## 3.3.3. 확장 함수로 유틸리티 함수 정의
+
+    fun <T> Collection<T>.joinToString(seperator: String = ", ", prefix: String = "", postfix: String = ""): String {
+      val result = StringBuilder(prefix)
+    	for ((index, element) in this.withIndex()) { // this는 수신객체를 가리킨다.
+        if (index > 0) result.append(seperator)
+        result.append(element)
+      }
+      result.append(postfix)
+    	return result.toString()
+    }
+
+## 3.3.4. 확장 함수는 override 할 수 없다.
+
+    open class View {
+      open fun click() = println("View clicked")
+    }
+    
+    class Button: View() {
+      override fun click() = println("Button clicked")
+    }
+    
+    // Button 클래스는 View클래스의 click() 을 위임하여 구현하였으므로 Button 의 click() 메소드가 동작한다.
+
+- 확장 함수는 클래스의 일부가 아니라, 클래스 밖에 선언된다.
+- 확장함수를 기반 클래스, 하위 클래스에 정의하더라도 컴파일되면 클래스 밖에 선언되어 정적 메소드로 호출되기 때문에 오버라이딩 되지 않는다.
+- 어떤 클래스를 확장한 함수와 그 클래스의 멤버 함수의 이름과 시그니처가 같다면 멤버 함수가 호출된다. (멤버 함수의 우선순위가 더 높다.)
+
+## 3.3.5. 확장 프로퍼티
+
+- 기존 클래스 객체에 대한 프로퍼티 형식의 구문으로 사용할 수 있는 API를 추가할 수 있다. 프로퍼티라고 부르긴 하지만 상태를 저장할 적절한 방법이 없기 때문에 실제로 확장 프로퍼티는 아무 상태도 가질 수 없다.
+
+        val String.lastChar: Char
+        	get() = get(length - 1) // 기본 getter 구현을 제공할 수 없으므로 getter는 꼭 정의해야 한다.
+        
+        
+        /* 변경 가능한 확장 프로퍼티 선언하기 */
+        var StringBuilder.lastChar: Char
+          get() = get(length - 1)
+          set(value: Char) {
+            this.setCharAt(length - 1, value)
+          }
+        
+        println("kotlin".lastChar) ==> n
+        val sb = StringBuilder("Kotlin")
+        sb.lastChar = "!"
+        println(sb) ==> Kotlin!
+        
+        StringUtilKt.getLastChar("Java");
+
+# 3.4. 컬렉션 처리 : 가변 길이 인자, 중위 함수 호출, 라이브러리 지원
+
+- `vararg` : variable argument
+- `infix` 함수 호출 구문 사용하면, 인자가 하나 뿐인 메소드를 간편하게 호출할 수 있다.
+- 구조 분해 선언 (destructing declaration) : 복합적인 값을 분해하여 여러 변수에 나눠 담을 수 있다.
+
+## 3.4.1. 자바 컬렉션 API 확장
+
+- 컬렉션의 `first()`, `last()` 메소드는 코틀린으로 작성한 확장함수이다.
+
+    fun <T> List<T>.last(): T {
+    	if (isEmpty())
+        throw NoSuchElementException("List is empty.")
+      return this[lastIndex]
+    }
+    
+    public fun <T : Comparable<T>> Iterable<T>.max(): T? {
+        val iterator = iterator()
+        if (!iterator.hasNext()) return null
+        var max = iterator.next()
+        while (iterator.hasNext()) {
+            val e = iterator.next()
+            if (max < e) max = e
+        }
+        return max
+    }
+
+## 3.4.2. 가변 인자 함수 : 인자의 개수가 달라질 수 있는 함수 정의
+
+    val list = listOf(2, 1, 3, 4, 5)
+    public fun <T> listOf(vararg elements: T): List<T> = 
+      if (elements.size > 0) elements.asList() else emptyList()
+
+- variable argument 문법
+    - 자바 : `aaa(T... values)`
+    - 코틀린 : `aaa(vararg values: T)`
+- 이미 배열에 들어있는 원소를 가변 길이 인자로 넘길 때는 변수 앞에 `*`만 붙여주면 된다.
+
+        fun main(args: Array<String>) {
+          val list = listOf("args: ", *args)
+        	println(list)
+        }
+
+## 3.4.3. 값의 쌍 다루기 : 중위 호출과 구조 분해 선언
+
+    val map = mapOf(1 to "one", 7 to "seven", 53 to "fifty-three")
+
+- 여기서 `to` 키워드는 코틀린 키워드가 아니라 `infix call` 로, `to` 라는 일반 메소드를 호출한 것이다.
+- infix call 시에는 수신 객체와 유일한 메소드 인자 사이에 메소드 이름을 넣는다. 이때, 객체, 메소드 이름, 유일한 인자 사이에는 공백이 들어가야 한다.
+
+        1.to("one") // to 메소드를 일반적인 형식으로 호출
+        1 to "one"  // to 메소드를 infix call 형식으로 호출
+
+- 인자가 하나 뿐인 일반 메소드, 확장 메소드에 infix call을 사용할 수 있다.
+
+        infix fun <A, B> A.to(that: B): Pair<A, B> = Pair(this, that)
+        
+        val (number, name) = 1 to "one"
+
+- Pair 를 통해 두 변수를 즉시 초기화 할 수 있다. 이를 구조 분해 선언 (destructuring declaration) 이라고 부른다.
+
+        for ((index, element) in collection.withIndex()) { // (index, element)도 구조 분해 선언이라 볼 수 있다.
+          println("$index : $element")
+        }
