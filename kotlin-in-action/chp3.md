@@ -237,3 +237,95 @@
         for ((index, element) in collection.withIndex()) { // (index, element)도 구조 분해 선언이라 볼 수 있다.
           println("$index : $element")
         }
+
+# 3.5. 문자열과 정규식 다루기
+
+- 코틀린 코드가 만들어낸 문자열을 아무 자바 메소드에 넘겨도 되고, 자바 코드에서 받은 문자열을 아무 코틀린 라이브러리 함수에 넘겨도 문제 없다.
+- 코틀린은 다양한 확장 함수를 제공함으로써 표준 자바 문자열을 더 다루기 쉽게 해준다. 혼동이 야기될 수 있는 일부 메소드에 대해 더 명확한 코틀린 확장 함수를 제공함으로써 개발자의 실수를 줄여준다.
+
+## 3.5.1. 문자열 나누기
+
+- `split()` 메소드의 인자는 정규식 문자열이다.
+
+        "12.345-6.A".split(".") ==> [12, 345-6, A] 를 기대하지만 빈 배열이 반환된다.
+
+- 이런 혼동을 없애기 위해 코틀린에서는 여러 가지 다른 조합의 파라미터를 받는 `split()` 확장함수를 제공한다.
+- 정규식을 파라미터로 받는 함수는 `String` 이 아닌 `Regex` 타입의 값이다.
+
+        "12.345-6.A".split("\\.|-".toRegex()) ==> [12, 345, 6, A]
+        "12.345-6.A".split(".", "-") ==> [12, 345, 6, A]
+
+## 3.5.2. 정규식과 3중 따옴표로 묶은 문자열
+
+- 전체 파일 경로명을 디렉토리 / 파일이름 / 확장자로 구분하는 함수를 만들어보자.
+    - String 확장함수를 이용
+
+            /Users/yole/kotlin-book/chapter.adoc
+            
+            fun parsePath(path: String) {
+            	val dir = path.substringBeforeLast("/")
+              val file = path.substringAfterLast("/")
+              val fileName = file.substringBeforeLast(".")
+              val fileExtension = file.substringAfterLast(".")
+            
+              println("Dir: $dir, name: $fileName, ext: $fileExtension")
+            }
+
+    - 경로 파싱에 정규식 사용하기
+
+            """(.+)/(.+)\.(.+)""".toRegex().matchEntire(path)?.let {
+              val (dir, fileName, fileExtension) = it.destructured
+              println("Dir: $dir, name: $fileName, ext: $fileExtension")
+            }
+
+## 3.5.3. 여러 줄 3중 따옴표 문자열
+
+- 여러줄 문자열에는 들여쓰기, 줄 바꿈을 포함한 모든 문자가 들어간다.
+- 이부분은.. 겪어보면 아는 내용일거라 과감히 생략하겠다.
+
+# 3.6. 코드 다듬기 : 로컬 함수와 확장
+
+    class User(val id: Int, val name: String, val address: String)
+    
+    fun saveUser(user: User) {
+    	if (user.name.isEmpty()) {
+        throw IllegalArgumentException("Can't save user ${user.id}: empty Name")  // 코드 중복 발생
+      }
+    	if (user.address.isEmpty()) {
+        throw IllegalArgumentException("Can't save user ${user.id}: empty Address")  // 코드 중복 발생
+      }
+    
+      // save user
+    }
+    
+    // 1차 개선
+    fun saveUser(user: User) {
+      fun validate(value: String, fieldName: String) {
+        if (value.isEmpty()) {
+    			throw IllegalArgumentException("Can't save user ${user.id}: empty $fieldName")
+        }
+      }
+    
+      validate(user.name, "Name")
+      validate(user.address, "Address")
+    
+      // save user
+    }
+    
+    // 2차 개선
+    fun User.validateBeforeSave() {
+      fun validate(value: String, fieldName: String) {
+        if (value.isEmpty()) {
+    			throw IllegalArgumentException("Can't save user $id: empty $fieldName")
+        }
+      }
+    
+      validate(name, "Name")
+      validate(address, "Address")
+    }
+    
+    fun saveUser(user: User) {
+      user.validateBeforeSave()
+      // save user
+    }
+
