@@ -208,3 +208,173 @@ Lambda Expression : 다른 함수에 넘길 수 있는 작은 코드 조각. 람
         
         val naturalNums = generateSequence(0) { it + 1 }
 
+# 5.4. 자바 함수형 인터페이스
+
+    /* Java Annoymous Class */
+    button.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) { .. }
+    });
+    
+    /* Java Lambda */
+    button.setOnClickListener(view -> {
+      ..
+    });
+    
+    /* Kotlin Lambda */
+    button.setOnClickListener { view -> .. }
+
+## 5.4.1. 자바 메소드에 람다를 인자로 전달
+
+    void postponeComputation(int delay, Runnable computation);
+    
+    /* Lambda 식으로 작성된 구문은 인스턴스가 단 하나만 만들어진다. */
+    postponeComputation(1000) { println(42) }
+    
+    /* annoymous instance 는 실행시점에 매번 생성된다. */ 
+    postponeComputation(1000, object : Runnable {
+      override fun run() { println(42) }
+    })
+    
+    /* Lambda 식과 동일하게 인스턴스가 한번만 만들어지도록 구현하는 방법  */
+    val runnable = Runnable { println(42) } // 전역변수 혹은 최상위 변수
+    fun handleComputation() {
+      postponeComputation(1000, runnable)
+    }
+    
+    /* Lambda 식에 외부 변수를 사용하는 부분이 있다면 호출할 때마다 새로운 인스턴스를 생성 */
+    fun handleComputation(id: String) {
+      postponeComputation(1000) { println(id) }
+    }
+
+## 5.4.2. SAM 생성자 : 람다를 함수형 인터페이스로 명시적으로 변경
+
+- SAM : Single Abstract Method
+- 람다를 함수형 인터페이스의 인스턴스로 변환할 수 있게 컴파일러가 자동으로 생성한 함수
+- 컴파일러가 자동으로 람다를 함수형 인터페이스 Annoymous Class로 바꾸지 못하는 경우 SAM 생성자를 사용할 수 있다.
+- 함수형 인터페이스의 인스턴스를 반환하는 메소드가 있다면 람다를 직접 반환할 수 없고, 반환하고자 하는 람다를 SAM 생성자로 감싸야 한다.
+
+        fun createAllDoneRunnable(): Runnable {
+          return Runnable { println("All Done!") }
+        }
+        
+        createAllDoneRunnable().run()
+
+    - SAM 생성자 이름 : 함수형 인터페이스의 이름과 같음
+- 람다로 생성한 함수형 인터페이스 인스턴스를 변수에 저장하는 경우
+
+        val listener = OnClickListener { view ->
+          val text = when (view.id) {
+            R.id.button1 -> "First Button"
+            R.id.button2 -> "Second Button"
+            else -> "Unknown Button"
+          }
+          toast(text)
+        }
+        button1.setOnClickListener(listener)
+        button2.setOnClickListener(listener)
+
+    - listener 는 어떤 버튼이 클릭됐는지에 따라 적절한 동작을 수행함.
+
+# 5.5. 수신 객체 지정 람다 : with, apply
+
+## 5.5.1. with 함수
+
+어떤 객체의 이름을 반복하지 않고도 그 객체에 대해 다양한 연산을 수행할 수 있는 기능을 제공한다.
+
+- 알파벳 만들기
+
+        fun alphabet(): String {
+          val result = StringBuilder()
+          for (letter in 'A'..'Z') {
+            result.append(letter)
+          }
+          result.append("\nNow I know the alphabet!")
+          return result.toString()
+        }
+
+- `with`를 사용해 알파벳 만들기
+
+        fun alphabet(): String {
+          val stringBuilder = StringBuilder()
+          return with(stringBuilder) {
+            for (letter in 'A'..'Z') {
+              append(letter)
+            }
+            append("\nNow I know the alphabet!")
+            toString()
+          }
+        }
+
+- 언어가 제공하는 기능처럼 보이지만, 실제 `with()` 의 시그니처는 파라미터가 두개인 함수이다.
+
+        /**
+         * Calls the specified function [block] with the given [receiver] as its receiver and returns its result.
+         */
+        @kotlin.internal.InlineOnly
+        public inline fun <T, R> with(receiver: T, block: T.() -> R): R {
+            contract {
+                callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+            }
+            return receiver.block()
+        }
+        // block은 receiver 객체를 받는다.
+
+- `with` 가 반환하는 값은 람다 코드를 실행한 결과이다. 하지만 때로는 람다의 결과 대신 수신 객체가 필요한 경우도 있다. 이 경우 `apply` 함수를 사용할 수 있다.
+
+## 5.5.2. apply 함수
+
+`apply` 는 항상 자신에게 전달한 객체를 반환한다.
+
+- `apply`를 이용하여 알파벳 반환함수 리팩토링
+
+        fun alphabet() = StringBuilder().apply {
+          for (letter in 'A'..'Z') {
+            append(letter)
+          }
+          append("\nNow I know the alphabet!")
+        }.toString()
+
+- `apply` 함수
+
+        /**
+         * Calls the specified function [block] with `this` value as its receiver and returns `this` value.
+         */
+        @kotlin.internal.InlineOnly
+        public inline fun <T> T.apply(block: T.() -> Unit): T {
+            contract {
+                callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+            }
+            block()
+            return this // 항상 자신에게 전달된 객체를 반환한다.
+        }
+
+- 객체의 인스턴스를 만들면서 즉시 프로퍼티 중 일부를 초기화 해야하는 경우 유용하다.
+- 자바에서는 보통 별도의 `Builder` 객체가 이 역할을 담당한다.
+- 예제
+
+        fun createViewWithCusttomAttributes(context: Context) = 
+          TextView(context).apply { // TextView 인스턴스를 생성한다.
+            text = "Sample Text" // 프로퍼티를 설정한다.
+            textSize = 20.0
+            setPadding(10, 0, 0, 0)
+          }
+
+- 알파벳 반환 함수 리팩토링
+
+        /**
+         * Builds new string by populating newly created [StringBuilder] using provided [builderAction]
+         * and then converting it to [String].
+         */
+        @kotlin.internal.InlineOnly
+        public inline fun buildString(builderAction: StringBuilder.() -> Unit): String =
+            StringBuilder().apply(builderAction).toString()
+        
+        fun alphabet(): String = buildString { // buildString 은 StringBuilder()를 활용하여 String을 만드는 경우 사용할 수 있도록 미리 만들어져있는 함수이다.
+            for (letter in 'A'..'Z') {
+              append(letter)
+            }
+            append("\nNow I know the alphabet!")
+          }
+        }
+
