@@ -136,4 +136,4 @@ root (id = 0) is the default user within a container. The image developer can cr
 ## References
 - [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
 - [Top 10 Docker CLI commands you can’t live without](https://medium.com/the-code-review/top-10-docker-commands-you-cant-live-without-54fb6377f481)
-
+- https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/
