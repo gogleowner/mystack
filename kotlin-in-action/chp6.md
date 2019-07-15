@@ -121,3 +121,157 @@
           override fun process(value: String?) { .. }
         }
 
+# 6.2. 코틀린의 원시 타입
+
+코틀린은 원시타입과 래퍼 타입을 구분하지 않는다. 코틀린 내부에서 어떻게 원시 타입에 대한 래핑이 작동하는지도 알아본다.
+
+## 6.2.1. 원시 타입 : Int, Boolean, Char, Byte, Short, Long, Double, Float
+
+- 자바는 primitive, reference 타입을 구분한다.
+    - primitive 변수에는 값이 직접 어싸인 되고,
+    - reference 변수에는 메모리 상의 객체의 주소가 들어간다.
+    - primitive 변수을 콜렉션에 담는 등 참조 타입이 필요할 경우에는 `java.lang.Integer` 등의 래퍼객체를 사용한다.
+- 코틀린은 primitive, reference 타입 구분을 하지 않는다.
+- 단 컴파일 시점에 숫자 타입은 가장 효율적인 방식으로 표현한다. `Int` 타입은 대부분 `int`로 컴파일된다. 이런 컴파일이 불가능한 경우는 컬렉션과 같은 제네릭 클래스를 사용하는 경우 뿐이다.
+    - `List<Int>` ⇒ `List<Integer>`
+
+## 6.2.2. Nullable primitive type : Int?, Boolean? 등
+
+- null 참조는 reference 변수에만 대입할 수 있기 때문에 null 이 될 수 있는 코틀린 타입은 primitive 로 표현할 수 없다. 따라서 코틀린에서 nullable 타입을 사용하면 그 타입은 자바의 reference 타입으로 컴파일된다.
+
+## 6.2.3. 숫자 변환
+
+- 코틀린과 자바의 가장 큰 차이점 중 하나는 숫자를 변환하는 방식이다.
+- 코틀린은 한 타입의 숫자를 다른 타입의 숫자로 자동 변환하지 않는다. 결과 타입이 허용하는 숫자 범위가 원래 타입의 범위보다 넓은 경우 조차도 자동 변환은 불가능하다.
+- 직접 변환 메소드를 호출해야 한다.
+
+        val intNum = 1
+        val longNum = i // Error: type mismatch 컴파일 오류 발생
+        
+        val longNum = intNum.toLong()
+
+- 코틀린은 Boolean 을 제외한 모든 primitive 타입에 대한 변환 함수를 제공한다.
+- 개발자의 혼란을 피하기 위해 타입 변환을 명시하기로 결정했다.
+- Boxed Type 을 비교하는 경우 문제가 많다.
+
+        new Integer(42).equals(new Long(42)) => false
+        
+        val x = 1
+        val list = listOf(1L, 2L, 3L)
+        
+        x in list => 묵시적 타입 변환으로 인해 false
+        x.toLong() in list => true
+
+## 6.2.4. Any, Any? : 최상위 타입
+
+- 자바의 Object 클래스가 최상위 클래스이듯, 코틀린에서는 Any 타입이 최상위 타입이다.
+- 자바 메소드에서 Object 를 인자로 받거나 반환하면 코틀린에서는 Any 로 타입을 취급한다.
+
+        class Any {
+            public open operator fun equals(other: Any?): Boolean
+            public open fun hashCode(): Int
+            public open fun toString(): String
+        }
+
+## 6.2.5. Unit 타입
+
+- 코틀린의 Unit 타입은 자바의 void 와 같은 기능을 한다.
+- 코틀린의 Unit과 자바의 void 와 다른점?
+    - Unit은 모든 기능을 갖는 일반적인 타입
+    - Unit을 타입 인자로 쓸 수 있다.
+    - Unit 타입의 함수는 Unit값을 묵시적으로 반환한다.
+
+        interface Processor<T> {
+          fun process(): T
+        }
+        class NoResultProcessor : Processor<Unit> {
+          override fun process(): Unit {
+            
+        	}
+        }
+
+- 자바에서 타입인자로 값 없음을 표현할 경우 `java.lang.Void` 타입을 사용하는 방법도 있지만, null 을 반환하기 위해서 `return null;` 을 명시해야 한다. 코틀린에서는 위의 예제처럼 리턴문을 명시하지 않아도 된다.
+- Unit 이라는 이름을 사용한 것은, 함수형 프로그래밍에서 전통적으로 **Unit은 단 하나의 인스턴스만 갖는 타입**을 의미해 왔고 그 유일한 인스턴스의 유무가 자바의 void, 코틀린의 Unit을 구분하는 가장 큰 차이이다.
+
+## 6.2.6. Nothing 타입 : 함수가 정상적으로 끝나지 않음.
+
+- 코틀린에는 성공적으로 값을 반환하는 값이 없어, 반환값이라는 개념 자체가 없는 함수가 일부 존재한다.
+
+        fun fail(message: String): Nothing { // 테스트에 예외를 던져서 테스트를 실패시킨다.
+          throw IllegalStateException(message)
+        }
+        
+        val address = company.address ?: fail("No address")
+        println(address.city)
+
+- Nothing 타입은 아무 값도 갖지 않는다. 따라서 함수의 반환타입 & 반환타입으로 쓰일 타입 파라미터로만 쓸 수 있다.
+
+# 6.3. 컬렉션과 배열
+
+## 6.3.1. Nullable과 컬렉션
+
+    val elementNullableList: List<Int?> // element들이 null이 될수 있다.
+    val nullableList: List<Int>? // element들은 null이 될수 없고, 컬렉션 자체가 nullable이다.
+    
+    elementNullableList.filterNotNull() // null이 아닌 값들만 필터링해서 쓸 수 있다.
+
+## 6.3.2. 읽기 전용과 변경 가능한 컬렉션
+
+- 코틀린에서는 컬렉션 안의 데이터에 **접근**하는 인터페이스 & 컬렉션 안의 데이터 **변경** 인터페이스를 분리했다.
+
+        package kotlin.collections.Collection // 컬렉션 안의 데이터 **접근** 인터페이스
+        package kotlin.collections.MutableCollection // 컬렉션 안의 데이터 **변경** 인터페이스
+
+- 컬렉션을 변경할 필요가 있을 때만 MutableCollection을 사용한다.
+
+## 6.3.3. 코틀린 컬렉션과 자바
+
+- 자바의 ArrayList와 HashSet은 코틀린의 MutableCollection을 확장한다.
+
+## 6.3.4. 컬렉션을 플랫폼 타입으로 다루기
+
+- 자바와 코틀린 코드를 오갈 경우, 자바 코드에서 정의한 타입을 코틀린에서는 플랫폼 타입으로 본다.
+- 플랫폼 타입의 경우 코틀린 쪽에는 null 관련  정보가 없어서 Nullable , non-nullable 타입 둘다 허용한다.
+- 대부분 문제가 되지 않지만, 컬렉션 타입이 시그니처에 들어간 자바 메소드 구현을 오버라이드 할 경우 immutable collection, mutable collection간의 차이가 문제가 된다. 이 경우 여러가지를 고려하여 선택해야 한다.
+    - 컬렉션이 null이 될 수 있는가?
+    - 컬렉션의 원소가 null이 될 수 있는가?
+    - 오버라이드하는 메소드가 컬렉션을 변경할 수 있는가?
+
+    interface FileContentProcessor {
+      void processContents(File path, byte[] binaryContents,
+                           List<String> textContents)
+    }
+    
+    class FileIndexer : FileContentProcessor {
+      override fun processContents(path: File, BinaryContents: ByteArray?, textContents: List<String>?) {
+      }
+    }
+    
+    interface DataParser<T> {
+      void parseData(String input, List<T> output, List<String> errors)
+    }
+    
+    class PersonParser : DataParser<Person> {
+      override fun parseData(input: String, output: MutableList<Person>, errors: MutableList<String?>) {}
+    }
+
+## 6.3.5. 객체의 배열과 원시 타입의 배열
+
+- 코틀린 배열은 타입 파라미터를 받는 클래스이다. 배열의 원소 타입은 타입 파라미터에 의해 정해진다.
+
+    val letters = Array<String>(26) { i -> ('a'+i).toString() }
+    val strings = listOf("a", "b", "c")
+
+- 원시타입의 배열을 표현하는 별도 클래스들을 제공한다.
+    - 각 배열 타입의 생성자는 `size` 인자를 받아서 해당 원시 타입의 디폴트 값으로 초기화된 배열을 반환한다.
+    - 가변인자로 받아 해당 값이 들어간 배열을 반환하는 factory method 를 제공한다.
+    - 크기와 람다를 인자로 받는 생성자를 사용한다.
+
+    val fiveZeros = IntArray(5)
+    val fiveZeros = intArrayOf(0, 0, 0, 0, 0)
+    val squares = IntArray(5) { i -> (i+1) * (i+1) }
+    
+    squares.forEachIndexed { index, element -> 
+      println("element $index is $element")
+    }
+
