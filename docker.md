@@ -26,6 +26,9 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 - usage : `docker logs [OPTIONS] CONTAINER`
 - Options
 	- `-f, --follow` : follow log output
+  - `--since` : 특정 시점부터의 로그를 보여준다.
+    - `$ docker logs {CONTAINER ID} --since 2013-01-02T13:23:37`
+    - `$ docker logs {CONTAINER ID} --since 42m`
 
 ## docker kill
 - 구동중인 컨테이너를 shutdown
