@@ -252,3 +252,33 @@
           val value = entry.component2()
         }
 
+
+# 7.5. 프로퍼티 접근자 로직 재활용 : 위임 프로퍼티 (Delegated property)
+
+- 값을 뒷받침하는 필드에 단순히 저장하는 것보다 더 복잡한 방식으로 작동하는 프로퍼티를 쉽게 구현할 수 있따.
+- 프로퍼티는 위임을 사용해 자신의 값을 필드가 아니라 데이터베이스 테이블이나 브라우저 세션, 맵 등에 저장할 수 있다.
+- Delegate Design Pattern : 객체가 직접 작업을 수행하지 않고 다른 도우미 객체가 그 작업을 처리하게 맡기는 패턴. 작업을 처리하는 도우미 객체를 delegate라 부른다.
+
+## 7.5.1. 위임 프로퍼티 소개
+
+    class Foo {
+      var p: Type by Delegate() // 접근자 로직을 다른 객체에게 위임한다.
+    }
+
+    // 위 코드는 아래와 같이 컴파일 된다.
+    class Foo {
+      private val delegate = Delegate()
+      var p: Type
+        set(value: Type) = delegate.setValue(.., value)
+        get() = delegate.getValue(..)
+        // p 프로퍼티를 위해 컴파일러가 생성한 접근자는 getValue, setValue 를 호출한다.
+    }
+
+    class Delegate {
+      operator fun getValue(...) { .. }
+      operator fun setValue(..., value: Type) { .. }
+    }
+
+    val foo = Foo()
+    val oldValue = foo.p // delegate.getValue()
+    foo.p = newValue // delegate.setValue(.., newValue)
