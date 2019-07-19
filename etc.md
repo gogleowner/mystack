@@ -55,3 +55,10 @@ java.lang.NullPointerException
 - 이런게 대화형 쉘의 장점인 듯 싶다.
   - cf) python 으로도 동일하게 사용할 수 있겠다. 내일 해봐야지.
 
+## curl
+- header 넘기기 : `-H`, 데이터 넘기기 : `-d`
+
+    ```
+curl -XPUT localhost:8080/foo/bar -H "Content-Type: application/json" -d {}
+    ```
+
