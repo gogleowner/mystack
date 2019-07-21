@@ -252,7 +252,6 @@
           val value = entry.component2()
         }
 
-
 # 7.5. 프로퍼티 접근자 로직 재활용 : 위임 프로퍼티 (Delegated property)
 
 - 값을 뒷받침하는 필드에 단순히 저장하는 것보다 더 복잡한 방식으로 작동하는 프로퍼티를 쉽게 구현할 수 있따.
@@ -264,7 +263,7 @@
     class Foo {
       var p: Type by Delegate() // 접근자 로직을 다른 객체에게 위임한다.
     }
-
+    
     // 위 코드는 아래와 같이 컴파일 된다.
     class Foo {
       private val delegate = Delegate()
@@ -273,12 +272,162 @@
         get() = delegate.getValue(..)
         // p 프로퍼티를 위해 컴파일러가 생성한 접근자는 getValue, setValue 를 호출한다.
     }
-
+    
     class Delegate {
       operator fun getValue(...) { .. }
       operator fun setValue(..., value: Type) { .. }
     }
-
+    
     val foo = Foo()
     val oldValue = foo.p // delegate.getValue()
     foo.p = newValue // delegate.setValue(.., newValue)
+
+## 7.5.2. 위임 프로퍼티 사용 : 초기화 지연 `by lazy()`
+
+- lazy initialization 은 객체의 일부분을 초기화하지 않고 남겨뒀다가 실제로 그 값이 필요할 때 초기화하는 패턴이다.
+
+    class Person(val name: String) {
+      private var _emails: List<Email>? = null
+    
+      val emails: List<Email>
+        get() {
+          if (_emails == null) {
+            _emails = loadEmails(this)
+          }
+          return _emails!!
+        }
+    }
+
+- backing property : `_emails` 프로퍼티에 값을 저장하고 `emails` 는 읽기 함수를 제공함.
+- 하지만 이런 코드를 만드는 것은 성가신 일이다. lazy initialization 프로퍼티가 많아지면? thread-safe 하지 않은 점이 있는데, 코틀린에서는 더 나은 해법을 제공한다.
+
+    class Person(val name: String) {
+      val emails by lazy { loadEmails(this) }
+    }
+
+- `lazy` 함수는 코틀린 관례에 맞는 시그니처의 `getValue` 메소드가 들어있는 객체를 반환한다.
+- 기본적으로 thread safe 하다. 필요에 따라 사용할 lock을 함수에 전달할 수도 있고 다중 쓰레드 환경에서 사용하지 않을 프로퍼티를 위해 `lazy`함수가 동기화를 못하게 막을 수도 있다.
+- `lazy` 함수를 통해서 프로퍼티가 변경될 때마다 특정 이벤트를 발생시키는 코드를 넣기도 수월하다.
+
+- 프로퍼티 변경 통지를 직접 구현
+
+        open class PropertyChangeAware {
+          protected val changeSupport = PropertyChangeSupport(this)
+        
+          fun addPropertyChangeListener(listener: PropertyChangeListener) {
+            changeSupport.addPropertyChangeListener(listener)
+          }
+        
+          fun remotePropertyChangeListener(listener: PropertyChangeListener) {
+            changeSupport.removePropert9yChangeListener(listener)
+          }
+        }
+        
+        class Person(val name: String, val age: Int, val salary: Int) : PropertyChangeAware() {
+          var age: Int = age
+            set(newValue) {
+              val oldValue = field
+              field = newValue
+              changeSupport.firePropertyChange("age", oldValue, newValue)
+            }
+        
+          var salary: Int = salary // .. 위와 같음. setter에 중복이 매우 많다.
+        }
+
+- 도우미 클래스를 이용하여 프로퍼티 변경 통지 구현
+
+        class ObservableProperty(propName: String, var propValue: Int, val chaneSupport: PropertyChangeSupport) {
+          fun getValue(): Int = propValue
+          fun setValue(newValue: Int) {
+            val oldValue = field
+            propValue = newValue
+            changeSupport.firePropertyChange(propName, oldValue, newValue)
+          }
+        }
+        
+        class Person(val name: String, val age: Int, val salary: Int) : PropertyChangeAware() {
+        
+          val _age = ObservableProperty("age", age, changeSupport)
+            get() = _age.getValue
+            set(value) { _age.setValue(value) }
+          ..
+        }
+        
+        // 중복을 상당부분 제거했지만 ObservableProperty 에 넣는 준비 코드의 양이 많다.
+
+- 프로퍼티 위임 기능을 이용
+
+        class ObservableProperty(var propValue: Int, val changeSupport: PropertyChangeSupport) {
+          operator fun getValue(p: Person, prop: KProperty<*>): Int = propValue
+          operator fun setValue(p: Person, prop: KProperty<*>), newValue: Int) {
+            val oldValue = propValue
+            propValue = newValue
+            changeSupport.firePropertyChange(prop.name, oldValue, newValue)
+          }
+        }
+        
+        /*
+        - operator 
+        - KProperty<*>
+        */
+        
+        class Person(val name: String, val age: Int, val salary: Int) : PropertyChangeAware() {
+          var age: Int by ObservableProperty(age, changeSupport)
+          var salary: Int by ObservableProperty(salary, changeSupport)
+        }
+        
+        // by 키워들르 이용해 위임 객체를 지정하면 위의 다소 수고스러운 로직을 컴파일러가 자동으로 처리해줌.
+        // 코틀린 표준 라이브러리에는 위의 ObservableProperty 와 비슷한 클래스인 Delegates.observable 클래스가 있다.
+
+- `Delegates.observable`을 이용한 프로퍼티 변경 통지 구현
+
+        class Person(val name: String, val age: Int, val salary: Int) : PropertyChangeAware() {
+          private val observer = { prop: KProperty<*>, oldValue: Int, newValue: Int -> 
+            changeSupport.firePropertyChange(prop.naem, oldValue, newValue)
+          }
+          var age: Int by Delegates.observable(age, observer)
+          var salary: Int by Delegates.observable(salary, observer)
+        }
+
+## 7.5.4. 위임 프로퍼티 컴파일 규칙
+
+    class C {
+      var prop: Type by MyDelegate()
+    }
+    
+    val c = C()
+    val x = c.prop 
+    c.prop = x
+    
+    // 위의 코드가 컴파일되면 아래와 같은 코드를 생성한다.
+    class C {
+      private val <delegate> = MyDelegate()
+      var prop: Type
+        get() = <delegate>.getValue(this, <property>)
+        set(value: Type) = <delegate>.setValue(this, <property>, value)
+    }
+    
+    val x = <delegate>.getValue(c, <property>)
+    <delegate>.setValue(c, <property>, x)
+
+- 프로퍼티 값이 저장되는 장소가 변경될 경우에 간결하게 처리가 가능하다.
+
+## 7.5.5. 프로퍼티 값을 맵에 저장
+
+- `expando object` : 자신의 프로퍼티를 동적으로 정의할 수 있는 객체를 만들때 사용하는 위임 프로퍼티
+
+    class Person {
+      private val _attributes = hashMapOf<String, String>()
+    
+      fun setAttribute(attrName: String, value: String) {
+        _attributes[attrName] = value
+      }
+    
+      val name: String
+        get() = _attributes["name"]!! // 수동으로 맵에서 정보를 꺼낸다.
+    
+      val name: String: String by _attributes // 위임 프로퍼티로 맵을 사용한다.
+    }
+
+- 위의 코드가 동작하는 이유는 Map, MutableMap의 인터페이스에 `getValue(), setValue()` 확장 함수를 제공하기 때문에 가능하다.
+
