@@ -11,3 +11,9 @@
 
 - `Ctrl + D` : Scroll window Downwards in the buffer.
 - `Ctrl + U` : Scroll window Upwards in the buffer.
+
+## 문자열 치환
+
+- `:%s/word/new_word/g` : 파일 전체의 word 문자열을 new\_word 로 변경한다.
+- `:%s/word/new_word/gc` : 문자열 변경여부를 사용자에게 매번 묻는다.
+
