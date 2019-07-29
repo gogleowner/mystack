@@ -1,21 +1,23 @@
 # git commands
 
 ## move to a fork remote
-    1. Fork repository to your account on github
-    2. add new remote to your repository
 
-        ```
-        $ git remote add upstream git@github.com/{your_account}/{your_repository}
-        ```
+1. Fork repository to your account on github
+2. add new remote to your repository
 
-    3. Fetch & Push
+    ```
+$ git remote add upstream git@github.com/{your_account}/{your_repository}
+    ```
+
+3. Fetch & Push
         
-        ```
-        // fetch upstream
-        $ git fetch upstream
-        // push upstream
-        $ git push upstream 
-        ```
+    ```
+// fetch upstream
+$ git fetch upstream
+// push upstream
+$ git push upstream
+    ```
+
 ## git config
 - `$ git config --list` : print global, local repository settings
 - `$ git config --edit` : open editor to edit local repository config
@@ -38,3 +40,7 @@
 ## git stash
 - `$ git stash clear` : 모든 stash 상태 제거
   - https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-stash.html
+
+# reference
+- https://www.ocpsoft.org/tutorials/git/reset-and-sync-local-respository-with-remote-branch/
+
