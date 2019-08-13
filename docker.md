@@ -135,6 +135,7 @@ root (id = 0) is the default user within a container. The image developer can cr
   - `-t --tag=""` : 이미지의 이름과 태그를 명시한다. ex) `abc-project:0.0.1`
   - `--build-arg` : 빌드 시점에 Dockerfile 에 `ENV` 값을 세팅한다.
   - `--file , -f` : 빌드할 Dockerfile 파일이름 지정 (Default is ‘PATH/Dockerfile’)
+    - `$ docker build -f {PATH/your-dockerfile-name}`
 
 ## References
 - [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
