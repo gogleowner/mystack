@@ -97,3 +97,9 @@ ccc
 - `awk '{print $2}'` : 두번째 필드를 출력하라는 함수이다.
     - awk : https://ko.wikipedia.org/wiki/AWK
 
+    ```
+aaa
+bbb
+ccc
+ddd
+    ```
