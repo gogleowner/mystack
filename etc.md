@@ -58,14 +58,14 @@ java.lang.NullPointerException
 ## curl
 - header 넘기기 : `-H`, 데이터 넘기기 : `-d`
 
-    ```
+```
 curl -XPUT localhost:8080/foo/bar -H "Content-Type: application/json" -d {}
-    ```
+```
 
 ## Shell Script
 - 파일 내의 중복된 라인이 많은 순으로 정렬
 
-    ```
+```
 aaa
 bbb
 ccc
@@ -78,28 +78,28 @@ bbb
 bbb
 ccc
 ccc
-    ```
+```
 
 - 위와 같은 파일이 있다고 가정..
     - `$ cat tmp.txt | sort | uniq -c | sort -nr | awk '{print $2}'`
 - `sort` : 말그대로 정렬이다. `aaa aaa aaa aaa bbb bbb bbb...`
 - `uniq -c` : uniq는 반복되는 라인을 필터링하는 기능을 가지고 있는데, `-c (--count)` 옵션은 개수를 기준으로 필터링 하는 옵션이다.
 
-    ```
+```
 4 aaa
 3 bbb
 2 ccc
 1 ddd
-    ```
+```
 
 - `sort -nr` : `-n (--numeric-sort)`, `-r (--reverse)` 는 numeric 한 값을 역순으로 정렬한다는 의미이다.
 
 - `awk '{print $2}'` : 두번째 필드를 출력하라는 함수이다.
     - awk : https://ko.wikipedia.org/wiki/AWK
 
-    ```
+```
 aaa
 bbb
 ccc
 ddd
-    ```
+```
