@@ -14,8 +14,27 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 ## docker ps
 - 구동중인 컨테이너 목록
-- `-a` : 구동중, 멈춘 컨테이너 목록 보기
+- `-a, --all` : 구동중, 멈춘 컨테이너 목록 보기
+- `-q, --quiet` : 숫자 ID 만 출력
+
+```
+$ docker ps -q
+1c07723538f7
+692a0d927d6e
+da1b1752b611
+```
+- `-s, --size` : 파일의 사이즈를 함께 출력
+
+```
+$ docker ps -s
+CONTAINER ID    IMAGE      COMMAND       CREATED        STATUS                PORTS              NAMES            SIZE
+1c07723538f7    blabla   "/bin/bash"   23 hours ago    Up 23 hours     0.0.0.0:8080->8080/tcp    blabla   912.1 kB (virtual 1.162 GB)
+```
+
 - `--format` : ps내용을 원하는 형태로 포맷팅할 수 있음
+- `-f, --filter` : 특정 조건에 맞는 컨테이너 목록을 필터링. `key=value` 형태로 필터링하면 된다.
+  - `$ docker ps -f status=exited` : 종료된 컨테이너 목록
+  - `$ docker ps -f name={blabla}` : 컨테이너 이름으로 필터링
 
 	```
 	CONTAINER ID / IMAGE / COMMAND / CREATED / STATUS / PORTS / NAMES
@@ -65,7 +84,7 @@ root (id = 0) is the default user within a container. The image developer can cr
 	- `-d` : containers started in detached mode
 	- `-p` : 포트포워딩
 		- ex) `$ docker run -d -p 5000:5000 {image}`
-		- `{image}` image를 detached모드로 실행하고 포트를 5000으로 포트포워딩 하라.
+		
   - `--name` : 컨테이너에 이름 지정
   - `--hostname , -h` : 컨테이너에 호스트이름 설정
   - `--link` : 컨테이너 끼리 연결
@@ -115,6 +134,8 @@ root (id = 0) is the default user within a container. The image developer can cr
 - `$ docker rm $(docker ps -a -q)`
 - `$ docker rmi $(docker images -a -q)`
 
+## 종료된 docker 컨테이너들의 볼륨 삭제
+- `$ docker rm -v $(docker ps -a -q -f status=exited)`
 
 ## docker volume ls
 - Volume의 목록을 보여준다.
@@ -137,7 +158,51 @@ root (id = 0) is the default user within a container. The image developer can cr
   - `--file , -f` : 빌드할 Dockerfile 파일이름 지정 (Default is ‘PATH/Dockerfile’)
     - `$ docker build -f {PATH/your-dockerfile-name}`
 
+## docker system prune
+- 중지된 컨테이너, dangling 이미지, 사용하지 않는 네트워크를 삭제한다.
+
+```
+$ docker system prune
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+3174e566b9122d25394a8d4c8fd4e971bace5e29bb75ff6e036e5dc9fcb54bae
+...
+
+Deleted Networks:
+..
+
+Deleted Images:
+..
+
+Total reclaimed space: 3.294GB
+```
+
+- 사용하지 않는 volume을 제거하려면 `--volumes` 옵션을 추가한다.
+
+```
+$ docker system prune --volumes
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all volumes not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Volumes:
+..
+
+Total reclaimed space: 74.45MB
+```
+
 ## References
 - [Docker 한글 문서 / 영상 모음집](http://documents.docker.co.kr)
 - [Top 10 Docker CLI commands you can’t live without](https://medium.com/the-code-review/top-10-docker-commands-you-cant-live-without-54fb6377f481)
 - https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/
+
