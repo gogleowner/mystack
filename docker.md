@@ -84,7 +84,7 @@ root (id = 0) is the default user within a container. The image developer can cr
 	- `-d` : containers started in detached mode
 	- `-p` : 포트포워딩
 		- ex) `$ docker run -d -p 5000:5000 {image}`
-		
+		- 여러개의 포트를 열 경우에는 `-p 4000:4000` 이런식으로 포트 하나 바인딩했던것처럼 동일하게 이으면 된다.
   - `--name` : 컨테이너에 이름 지정
   - `--hostname , -h` : 컨테이너에 호스트이름 설정
   - `--link` : 컨테이너 끼리 연결
