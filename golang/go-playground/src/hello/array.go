@@ -22,4 +22,16 @@ func main() {
   for i := 0; i < len(a); i++ {
     Println(a[i])
   }
+
+  for idx, value := range a {
+    Println(idx, value)
+  }
+
+  for idx := range a {
+    Print(idx, " ")
+  }
+  Println()
+  for _, value := range a {
+    Print(value, " ")
+  }
 }
