@@ -3,17 +3,16 @@ package main
 import . "fmt"
 
 func main() {
-  f()
-  Println("Hello, world")
+	f()
+	Println("Hello, world")
 }
 
 func f() {
-  defer func() {
-    s := recover()
+	defer func() {
+		s := recover()
 
-    Println(s)
-  }()
+		Println(s)
+	}()
 
-  panic("Error!")
+	panic("Error!")
 }
-

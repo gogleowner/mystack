@@ -1,4 +1,4 @@
-package example
+package main
 
 import . "fmt"
 
@@ -23,40 +23,40 @@ func main() {
 	Println(sumWithVariableArgument(1, 2, 3, 4, 5))
 	Println(sumWithVariableArgument([]int{1, 2, 3, 4, 5}...))
 
-  // recursive
+	// recursive
 	Println(factorial(5))
 
-  // function assign to varible
-  var sumFunc func(a int, b int) int = sum
-  sumFunc2 := sum
-  Println("sumFucn:", sumFunc(1, 2), "sumFunc2:", sumFunc2(1, 2))
+	// function assign to varible
+	var sumFunc func(a int, b int) int = sum
+	sumFunc2 := sum
+	Println("sumFucn:", sumFunc(1, 2), "sumFunc2:", sumFunc2(1, 2))
 
-  numberFunc := []func(int, int) int{sum, diff}
+	numberFunc := []func(int, int) int{sum, diff}
 
-  Println(numberFunc)
-  Println(numberFunc[0](1, 2), numberFunc[1](1, 2))
+	Println(numberFunc)
+	Println(numberFunc[0](1, 2), numberFunc[1](1, 2))
 
-  numFuncMap := map[string]func(int, int) int {
-    "sum" : sum,
-    "diff" : diff,
-  }
+	numFuncMap := map[string]func(int, int) int{
+		"sum":  sum,
+		"diff": diff,
+	}
 
-  Println(numFuncMap["sum"](1, 2), numFuncMap["diff"](1, 2))
+	Println(numFuncMap["sum"](1, 2), numFuncMap["diff"](1, 2))
 
-  // anonymous function => usage closer, defer, goroutine
-  func() {
-    Println("Hello world")
-  }()
+	// anonymous function => usage closer, defer, goroutine
+	func() {
+		Println("Hello world")
+	}()
 
-  func(s string) {
-    Println(s)
-  }("Hello, world!")
+	func(s string) {
+		Println(s)
+	}("Hello, world!")
 
-  r := func(num1 int, num2 int) int {
-    return num1 + num2
-  }(1, 2)
+	r := func(num1 int, num2 int) int {
+		return num1 + num2
+	}(1, 2)
 
-  Println(r)
+	Println(r)
 
 }
 
@@ -71,7 +71,6 @@ func sum(num1 int, num2 int) int {
 func diff(num1 int, num2 int) int {
 	return num1 - num2
 }
-
 
 func sum2(num1 int, num2 int) (result int) {
 	result = num1 + num2
