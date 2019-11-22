@@ -11,7 +11,8 @@ func main() {
 	//  example_1_raceCondition()
 	//  example_1_raceCondition_mutex()
 	//  example_2_readWriteLock()
-	example_3_conditionalVariable()
+	// example_3_conditionalVariable()
+	example_4_executeOnce()
 }
 
 func example_1_raceCondition() {
@@ -143,3 +144,20 @@ func example_3_conditionalVariable() {
 	fmt.Scanln()
 }
 
+/*
+Once.Do()는 어떤 상황이든 함수 또는 클로저를 딱 한번만 실행시킨다.
+복잡한 반복문 안에서 각종 초기화를 할 때 유용하다.
+*/
+func example_4_executeOnce() {
+	once := new(sync.Once)
+
+	for i := 0; i < 3; i++ {
+		go func(n int) {
+			fmt.Println("goroutine :", n)
+
+			once.Do(func() { fmt.Println("hello") })
+		}(i)
+	}
+
+	fmt.Scanln()
+}
