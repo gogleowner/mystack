@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -12,7 +14,10 @@ func main() {
 	//  example_1_raceCondition_mutex()
 	//  example_2_readWriteLock()
 	// example_3_conditionalVariable()
-	example_4_executeOnce()
+	// example_4_executeOnce()
+	// example_5_pool()
+	// example_6_waitGroup()
+	example_7_atomicOperation()
 }
 
 func example_1_raceCondition() {
@@ -160,4 +165,108 @@ func example_4_executeOnce() {
 	}
 
 	fmt.Scanln()
+}
+
+/*
+풀은 객체(메모리)를 사용한 후 보관해두었다가 다시 사용하게 해주는 기능
+객체를 반복해서 할당하면 메모리 사용량이 늘어나고 가비지컬렉터에게도 부담이 되는데,
+풀은 일종의 캐시라고 할 수 있으며 메모리 할당 & 해제 횟수를 줄여 성능을 높이고자 할 때 사용한다.
+*/
+
+type Data struct {
+	tag    string
+	buffer []int
+}
+
+func example_5_pool() {
+	pool := sync.Pool{
+		New: func() interface{} {
+			data := new(Data)
+			data.tag = "new"
+			data.buffer = make([]int, 10)
+
+			return data
+		},
+	}
+
+	for i := 0; i < 10; i++ {
+		go func() {
+			data := pool.Get().(*Data)
+			for index := range data.buffer {
+				data.buffer[index] = rand.Intn(100)
+			}
+			fmt.Println("random Put Data :", data)
+
+			data.tag = "used"
+			pool.Put(data)
+		}()
+	}
+
+	for i := 0; i < 10; i++ {
+		go func() {
+			data := pool.Get().(*Data)
+			n := 0
+			for index := range data.buffer {
+				data.buffer[index] = n
+				n += 2
+			}
+			fmt.Println("jjacksu Put Data :", data)
+
+			data.tag = "used"
+			pool.Put(data)
+		}()
+	}
+
+	fmt.Scanln()
+}
+
+/*
+waitGroup : 고루틴이 모두 끝날 때까지 기다릴 때 사용한다.
+*/
+func example_6_waitGroup() {
+	wg := new(sync.WaitGroup)
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1) // 대기그룹에 고루틴 개수 추가
+		go func(n int) {
+			defer wg.Done() // 고루틴이 끝나기 직전에 wg.Done() 호출
+			fmt.Println(n)
+		}(i)
+	}
+
+	wg.Wait() // 모든 고루틴이 끝날 때까지 기다림
+	fmt.Println("the end")
+}
+
+/*
+원자적연산 : 더이상 쪼갤 수 없는 연산여러 스레드, CPU코어에서 같은 변수를 수정할 때 서로 영향 받지 않고 안전하게 연산할 수 있다.
+보통 원자적 연산은 CPU의 명령어를 직접 사용하여 구현되어 있다.
+*/
+func example_7_atomicOperation() {
+	// 고루틴을 사용하여 정수형 변수를 2000번은 더하고, 1000번은 뺀다.
+	wg := new(sync.WaitGroup)
+	var data int32 = 0
+
+	for i := 0; i < 2000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// data += 1 // atomic하지 않다.
+			atomic.AddInt32(&data, 1)
+		}()
+	}
+
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// data -= 1
+			atomic.AddInt32(&data, -1)
+		}()
+	}
+
+	wg.Wait()
+
+	fmt.Println("expect result is 1000, actual result is [", data, "]")
+
 }
