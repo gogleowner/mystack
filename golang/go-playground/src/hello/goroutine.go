@@ -59,13 +59,13 @@ func example3() {
 }
 
 func example3_2() {
-	runtime.GOMAXPROCS(1)
+	runtime.GOMAXPROCS(1) // runtime.NumCPU())
 
 	fmt.Println("example3_2 가용한 CPU 개수 :", runtime.NumCPU(), " / golang 실행시의 설정한 CPU 개수 :", runtime.GOMAXPROCS(0))
 
 	s := "hello world"
 	for i := 0; i < 100; i++ {
-		go func(n int) { // 해당 구문을 내 로컬 기준, 4개의 코어를 가지고 병렬로 실행한다.  순서가 뒤엉키게 출력된다.
+		go func(n int) { // 해당 구문을 1개의 코어로 실행하기에 순서대로 출력된다.
 			fmt.Println(s, n)
 		}(i)
 	}

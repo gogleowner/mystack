@@ -11,13 +11,12 @@ func sum(a int, b int, c chan int) {
 }
 
 func main() {
-	//startChannel()
+	// startChannel()
 
 	// example_1_synchronousChannel()
 	// example_2_channelBuffering()
 	// example_3_rangeClose()
 	// example_3_isChannelClose()
-	// example_4_sendReceiveChannel()
 	// example_4_sendReceiveChannel()
 	//   example_4_returnValueToChannel()
 	// example_4_sumUseOnlyChannel()
@@ -29,8 +28,9 @@ func startChannel() {
 
 	go sum(1, 2, c)
 
-	n := <-c // 채널에서 값을 가져옴
-	fmt.Println(n)
+	fmt.Println(<-c)
+	// n := <-c // 채널에서 값을 가져옴
+	//fmt.Println(n)
 }
 
 func example_1_synchronousChannel() {
@@ -39,21 +39,23 @@ func example_1_synchronousChannel() {
 
 	go func() {
 		for i := 0; i < count; i++ {
-			done <- true
+			done <- true // write
 			fmt.Println("고루틴 :", i)
 			time.Sleep(time.Second)
 		}
 	}()
 
 	for i := 0; i < count; i++ {
-		<-done // 채널에 값이 들어올 때까지 대기했다가 값을 꺼냄.
+		<-done // read 채널에 값이 들어올 때까지 대기했다가 값을 꺼냄.
 		fmt.Println("메인 함수 :", i)
 	}
 }
 
-// 버퍼가 2개인 비동기 채널 생성. 비동기 채널은 보내는 쪽에서 버퍼가 가득 차면 실행을 멈추고 대기, 받는쪽에서 값이 없으면 대기
+// 버퍼가 2개인 비동기 채널 생성.
+// 비동기 채널은 보내는 쪽에서 버퍼가 가득 차면
+// 실행을 멈추고 대기, 받는쪽에서 값이 없으면 대기
 func example_2_channelBuffering() {
-	runtime.GOMAXPROCS(1)
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	done := make(chan bool, 2)
 	count := 4
@@ -99,7 +101,10 @@ func example_3_isChannelClose() {
 	}()
 
 	receivedValue, ok := <-c
+	close(c)
+	v, ok1 := <-c
 	fmt.Println("channel open?", ok, "/ responseValue :", receivedValue)
+	fmt.Println("channel open?", ok1, "/ responseValue :", v)
 }
 
 /*
@@ -115,15 +120,17 @@ func example_4_sendReceiveChannel() {
 		}
 
 		c <- 100
+		close(c)
 
 		// fmt.Println(<-c) // 채널에서 값을 꺼내면 컴파일 에러
 	}(c)
 
 	go func(c <-chan int) { // receive: 채널에서 값을 꺼내온다.
 		for i := range c {
-			fmt.Println(i)
+			fmt.Println("for ", i)
 		}
-		fmt.Println(<-c)
+		v, ok := <-c
+		fmt.Println(v, ok)
 
 		// c <- 1 // 채널에서 값을 보내면 컴파일 에러
 	}(c)
@@ -169,14 +176,19 @@ func example_4_sumUseOnlyChannel() {
 				sum += n
 			}
 
+			fmt.Println("before")
 			sumChannel <- sum
+			fmt.Println(sumChannel, " / ", sum)
 			close(sumChannel)
+			fmt.Println("after")
 		}()
 
 		return sumChannel
 	}(c)
 
-	fmt.Println(<-sum)
+	time.Sleep(2 * time.Second)
+	fmt.Println("main :", <-sum)
+	fmt.Scanln()
 }
 
 func example_5_select() {
@@ -192,28 +204,38 @@ func example_5_select() {
 
 	go func() {
 		for {
-			c2 <- "Hello world"
+			// c2 <- "Hello world"
 			time.Sleep(300 * time.Millisecond)
 		}
 	}()
 
 	go func() {
 		for { // 무한루프..
+			fmt.Println("for")
 			select {
 			case i := <-c1:
 				fmt.Println("c1 :", i)
 			case s := <-c2:
 				fmt.Println("c2 :", s)
-			case <-time.After(50 * time.Millisecond):
-				fmt.Println("timeout")
+
+			case <-time.After(2000 * time.Millisecond):
+				fmt.Println("timeout", 100)
+			case <-time.After(1000 * time.Millisecond):
+				fmt.Println("timeout", 10)
+			default:
+				i := <-c1
+				fmt.Println("default", i)
+				time.Sleep(1000 * time.Millisecond)
+
 				/*
 				   default:
 				     fmt.Println("아직 c1, c2가 초기화되지 않음.")
-				     time.Sleep(100 * time.Millisecond)
+				     time.Sleep(1000 * time.Millisecond)
 				*/
+
 			}
 		}
 	}()
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(10 * time.Second)
 }
