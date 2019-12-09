@@ -10,9 +10,9 @@ type Data struct {
 }
 
 func main() {
-	// example_0_printType()
-	// example_1_structTag()
-	example_2_pointerAndInterface()
+	example_0_printType()
+	//example_1_structTag()
+	//example_2_pointerAndInterface()
 }
 
 /*
@@ -87,6 +87,6 @@ func example_2_pointerAndInterface() {
 	fmt.Println(reflect.ValueOf(b).Int()) // 값이 나온다.
 
 	// fmt.Println(reflect.ValueOf(b).Elem()) // panic 발생. reflect: call of reflect.Value.Elem on int Value
-	//fmt.Println(reflect.ValueOf(b).Elem().Int()) // panic 발생. reflect: call of reflect.Value.Elem on int Value
-
+	// fmt.Println(reflect.ValueOf(b).Elem().Int()) // panic 발생. reflect: call of reflect.Value.Elem on int Value
 }
+
