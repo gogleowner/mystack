@@ -131,6 +131,8 @@ func example_2_errorType() {
 
 	s2, e2 := helloOneWithType(2)
 	if e2 != nil {
+		err := e2.(HelloOneError)
+		fmt.Println("error time:", err.value, "/ value:", err.value)
 		log.Fatal(e2)
 	}
 	fmt.Println(s2)

@@ -151,6 +151,7 @@ func Example_priorityQueue() {
 		}
 		i++
 	}
+
 	heap.Init(&pq)
 
 	// Insert a new item and then modify its priority.
@@ -179,7 +180,7 @@ func exmaple_3_ring() {
 	r := ring.New(len(data))
 	for i := 0; i < r.Len(); i++ {
 		r.Value = data[i]
-		r = [?12;4$yr.Next()
+		r = r.Next()
 	}
 
 	r.Do(func (x interface{}) {
